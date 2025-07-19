@@ -1,21 +1,21 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useRef, useImperativeHandle, forwardRef } from 'react';
 
-export const IniciarAudio = ({ nombreCancion, url }) => {
-    const audioRef = useRef()
+export const IniciarAudio = forwardRef(({ nombreCancion, url }, ref) => {
+    const audioRef = useRef();
 
-    useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.pause()
-            audioRef.current.src = url
-            audioRef.current.load()
-            audioRef.current.play()
+    useImperativeHandle(ref, () => ({
+        playAudio: (newUrl) => {
+            if (audioRef.current && newUrl) {
+                audioRef.current.src = newUrl;
+                audioRef.current.play()
+            }
         }
-    }, [url])
+    }))
 
     return (
         <div>
-            <h3>{nombreCancion || 'Selecciona una cancion'}</h3>
+            <h6>{nombreCancion || 'Selecciona una canción'}</h6>
             <audio ref={audioRef} controls />
         </div>
     )
-}
+})

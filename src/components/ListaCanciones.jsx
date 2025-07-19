@@ -1,14 +1,18 @@
-import React, { useState } from 'react'
-import 'bootstrap/dist/css/bootstrap.min.css'
-import { IniciarAudio } from './IniciarAudio'
+import React, { useState, useRef } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { IniciarAudio } from './IniciarAudio';
 
 export const ListaCanciones = ({ canciones }) => {
-    const [cancion1, setCancion1] = useState(null)
-    const [url1, setUrl1] = useState(null)
+    const [cancion1, setCancion1] = useState(null);
+    const audioPlayerRef = useRef(null);
 
     const handlePlay = (cancion) => {
-        setCancion1(cancion.name)
-        setUrl1(cancion.preview_url)
+        if (cancion.preview_url) {
+            setCancion1(cancion.name);
+            if (audioPlayerRef.current) {
+                audioPlayerRef.current.playAudio(cancion.preview_url);
+            }
+        }
     }
 
     return (
@@ -18,7 +22,7 @@ export const ListaCanciones = ({ canciones }) => {
                     <div className="card mx-auto" style={{ width: '100%' }}>
                         <div className="card-body">
                             <h6 className="card-title">{cancion1}</h6>
-                            <IniciarAudio nombreCancion={cancion1} url={url1} />
+                            <IniciarAudio ref={audioPlayerRef} />
                         </div>
                     </div>
                 </div>
@@ -28,8 +32,11 @@ export const ListaCanciones = ({ canciones }) => {
                         {canciones.map((cancion) => (
                             <li className="list-group-item d-flex justify-content-between align-items-center bg-black text-light" key={cancion.id}>
                                 <span className="fs-5 text-warning">{cancion.name}</span>
-                                <button className="btn btn-sm btn-warning" onClick={() => handlePlay(cancion)}>
-                                    <img src="https://i.ibb.co/rMVMtrb/play-removebg-preview.png" alt="Play" style={{ width: '30px', height: '30px' }}/>
+                                <button
+                                    className="btn btn-sm btn-warning"
+                                    onClick={() => handlePlay(cancion)}
+                                    disabled={!cancion.preview_url}>
+                                    <img src="https://i.ibb.co/rMVMtrb/play-removebg-preview.png" alt="Play" style={{ width: '30px', height: '30px' }} />
                                 </button>
                             </li>
                         ))}
@@ -37,5 +44,5 @@ export const ListaCanciones = ({ canciones }) => {
                 </div>
             </div>
         </div>
-    )    
+    )
 }
